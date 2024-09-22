@@ -71,10 +71,11 @@ class CFRAgent(CFR):
 
         else:
             info_set = self.info_sets[edited_state]
-            probabilities = info_set.cumulative_strategy.values()
+            average_strategy = info_set.get_average_strategy()
+            probabilities = list(average_strategy.values())
 
             #Do I need to use numpy for this ??
-            action = np.random.choice(info_set.cumulative_strategy.keys(), p = probabilities)
+            action = np.random.choice(list(average_strategy.keys()), p = probabilities)
 
         return action, probabilities
 

@@ -56,27 +56,41 @@ class History(_History):
     """ 
 
 
-    def __init__(self):
+    def __init__(self, seed = None, actions = None):
         """
         Initialize with a given history string
         """
         super().__init__()
-        history = leduc.env(render_mode = 'ansi')
-        history.reset(seed=np.random.randint(1_000))
-        self.history = history
+        #Should this be a shallow copy ??
+        self.actions = actions.copy() if actions else []
+        self.seed = seed if seed is not None else np.random.randint(1_000)
 
-        #We need to have a player counter for this to work
-        self.player = 0
+        # history = leduc.env(render_mode = 'ansi')
+        # history.reset(seed=np.random.randint(1_000))
+        # self.history = history
 
-    def __del__(self):
-        self.history.close()
+        #We need to have a player counter for this to work, maybe not anymore ??
+
+
+    def get_env(self):
+        """
+        Creates the environment and puts it in the state that corresponds to the given actions taken
+        """
+        env = leduc.env(render_mode='ansi')
+        env.reset(seed=self.seed)
+        for action in self.actions:
+            env.step(action)
+
+        return env
+    
 
     def is_terminal(self):
         """
         Whether the history is terminal (game over).
         """
-        #scuffed
-        observation, reward, termination, truncation, info = self.history.last()
+        
+        env = self.get_env()
+        observation, reward, termination, truncation, info = env.last()
         if termination or truncation:
             return True
         else:
@@ -87,20 +101,13 @@ class History(_History):
         Get the terminal utility for player $i$
         """
         # If $i$ is Player 1
-        observation, reward, termination, truncation, info = self.history.last()
-        if i == cast(Player,self.player):
+        env = self.get_env()
+        observation, reward, termination, truncation, info = env.last()
+        if i == self.player():
             return reward
         else:
             return -1*reward
         
-
-    #oh fuck -> wait I also think this is not needed
-    def is_chance(self) -> bool:
-        """
-        The first two events are card dealing; i.e. chance events
-        """
-        return len(self.history) < 2
-
 
     #TODO: Causing bug rn
     def __add__(self, other: Action):
@@ -108,22 +115,22 @@ class History(_History):
         Add an action to the history and return a new history
         Treat this as simply taking step in env with action other
         """
-        self.history.step(other)
-        self._next_player()
+        #god bless GPT
+        return History(actions=self.actions + [other], seed=self.seed)
 
-        return self.history
 
     def player(self) -> Player:
         """
         Current player
         """
-        return cast(Player, self.player)
+        return cast(Player, len(self.actions) % 2)
 
-    def __repr__(self):
-        """
-        Human readable representation
-        """
-        return repr(self.history)
+    #Not gonna worry about this now
+    # def __repr__(self):
+    #     """
+    #     Human readable representation
+    #     """
+    #     return repr(self.history)
 
     #important
     def info_set_key(self) -> tuple:
@@ -132,8 +139,9 @@ class History(_History):
         This is a string of actions only visible to the current player.
         """
     
-        #Ok, looks simple enough just return literally all information that isn't the opponent hand + actions you can perform
-        observation, reward, termination, truncation, info = self.history.last()
+        #Ok, looks simple enough, just return literally all information that isn't the opponent hand + actions you can perform
+        env = self.get_env()
+        observation, reward, termination, truncation, info = env.last()
 
         return tuple(observation['observation']) + tuple(observation['action_mask'])
         
@@ -141,7 +149,3 @@ class History(_History):
     def new_info_set(self) -> InfoSet:
         # Create a new information set object
         return InfoSet(self.info_set_key())
-
-    def _next_player(self) -> int:
-        
-        self.player = (self.player + 1) % 2
