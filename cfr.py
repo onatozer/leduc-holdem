@@ -202,6 +202,7 @@ class CFR:
         if h.is_terminal():
            return h.terminal_utility(i)
         
+        
         I = self._get_info_set(h)
 
         v = 0

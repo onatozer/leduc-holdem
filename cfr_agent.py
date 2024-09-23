@@ -186,6 +186,7 @@ class CFRAgent():
                 legal_actions (list): Indices of legal actions
         '''
         state = self.env.get_state(player_id)
+        print(f'obs state string: {state['obs']}')
         return state['obs'].tostring(), list(state['legal_actions'].keys())
 
     def save(self):

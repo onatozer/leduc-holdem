@@ -71,7 +71,7 @@ class History(_History):
 
         #We need to have a player counter for this to work, maybe not anymore ??
 
-
+    #TODO: How do I manage closing of the environments, could be making the code significantly slower
     def get_env(self):
         """
         Creates the environment and puts it in the state that corresponds to the given actions taken
@@ -109,7 +109,7 @@ class History(_History):
             return -1*reward
         
 
-    #TODO: Causing bug rn
+    
     def __add__(self, other: Action):
         """
         Add an action to the history and return a new history
@@ -132,7 +132,8 @@ class History(_History):
     #     """
     #     return repr(self.history)
 
-    #important
+    #NOTE: important
+    #TODO: Change so that output is a byte string so that indexing into dictionary is mroe efficient
     def info_set_key(self) -> tuple:
         """
         Information set key for the current history.
