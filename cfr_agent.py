@@ -174,6 +174,7 @@ class CFRAgent():
 
         return action, info
 
+    #TODO: This definitiely won't work
     def get_state(self, player_id):
         ''' Get state_str of the player
 
@@ -187,6 +188,7 @@ class CFRAgent():
         '''
         state = self.env.get_state(player_id)
         print(f'obs state string: {state['obs']}')
+        print(f'actual return val {state['obs'].tostring()}')
         return state['obs'].tostring(), list(state['legal_actions'].keys())
 
     def save(self):

@@ -5,8 +5,7 @@ from cfr import History as _History, InfoSet as _InfoSet, Action, Player
 from pettingzoo.classic import leduc_holdem_v4 as leduc
 
 
-#TODO: I'm thinking that we define history class so that it accepts instance of 
-# Infoset class definition and cfr class so that it accepts instance of history definition
+
 class InfoSet(_InfoSet):
     """
     ## [Information set](../index.html#InfoSet)
@@ -17,19 +16,26 @@ class InfoSet(_InfoSet):
         """Does not support save/load"""
         pass
 
+
+    
     def actions(self) -> List[Action]:
         """
         Return the list of actions. Terminal states are handled by `History` class.
         """
         #last 4 entries of the tuple constitute the 'action mask' -> don't know if I like this though, 
         # has to return list of unique numbers to index though regret dictionaries
+        byte_rep = self.key
+        numpy_rep = np.frombuffer(byte_rep, dtype=np.uint8)
 
-        action_mask = self.key[-4:]
+        action_mask = numpy_rep[-4:]
+
+
         valid_actions = []
         for i, a in enumerate(action_mask):
             if a == 1:
                 valid_actions.append(cast(Action,i))
         
+        # print(f'list of valid actions {valid_actions}')
         return valid_actions
 
     def __repr__(self):
@@ -39,7 +45,7 @@ class InfoSet(_InfoSet):
         total = sum(self.cumulative_strategy.values())
         total = max(total, 1e-6)
         bet = self.cumulative_strategy[cast(Action, 'b')] / total
-        return f'{bet * 100: .1f}%'
+        return f'key:{self.key} \n{bet * 100: .1f}%'
 
 
 class History(_History):
@@ -63,13 +69,9 @@ class History(_History):
         super().__init__()
         #Should this be a shallow copy ??
         self.actions = actions.copy() if actions else []
+        # print(f"action list: {self.actions}")
         self.seed = seed if seed is not None else np.random.randint(1_000)
 
-        # history = leduc.env(render_mode = 'ansi')
-        # history.reset(seed=np.random.randint(1_000))
-        # self.history = history
-
-        #We need to have a player counter for this to work, maybe not anymore ??
 
     #TODO: How do I manage closing of the environments, could be making the code significantly slower
     def get_env(self):
@@ -81,6 +83,7 @@ class History(_History):
         for action in self.actions:
             env.step(action)
 
+        # print(f'environment output:\n{env.last()}')
         return env
     
 
@@ -91,6 +94,8 @@ class History(_History):
         
         env = self.get_env()
         observation, reward, termination, truncation, info = env.last()
+        env.close()
+
         if termination or truncation:
             return True
         else:
@@ -103,6 +108,7 @@ class History(_History):
         # If $i$ is Player 1
         env = self.get_env()
         observation, reward, termination, truncation, info = env.last()
+        env.close()
         if i == self.player():
             return reward
         else:
@@ -116,7 +122,7 @@ class History(_History):
         Treat this as simply taking step in env with action other
         """
         #god bless GPT
-        return History(actions=self.actions + [other], seed=self.seed)
+        return History(actions= (self.actions + [other]), seed=self.seed)
 
 
     def player(self) -> Player:
@@ -133,8 +139,10 @@ class History(_History):
     #     return repr(self.history)
 
     #NOTE: important
-    #TODO: Change so that output is a byte string so that indexing into dictionary is mroe efficient
-    def info_set_key(self) -> tuple:
+    #TODO: Change so that output is a byte string so that indexing into dictionary is more efficient
+    #TODO: action function shouldn't be dependent on this returning the action mask to work properly
+    #Maybe this is fine the way it works now, idk
+    def info_set_key(self) -> bytes:
         """
         Information set key for the current history.
         This is a string of actions only visible to the current player.
@@ -143,9 +151,16 @@ class History(_History):
         #Ok, looks simple enough, just return literally all information that isn't the opponent hand + actions you can perform
         env = self.get_env()
         observation, reward, termination, truncation, info = env.last()
-
-        return tuple(observation['observation']) + tuple(observation['action_mask'])
+        env.close()
         
+        # print(f'observation {observation['observation']}, action mask {observation['action_mask']}')
+        obs_arr = np.array(observation['observation'], dtype = np.uint8)
+        action_mask = np.array(observation['action_mask'], dtype = np.uint8)
+
+        combined_arr = np.concatenate((obs_arr,action_mask))
+        # print(f'combined arr {combined_arr}')
+        return combined_arr.tobytes()
+
 
     def new_info_set(self) -> InfoSet:
         # Create a new information set object

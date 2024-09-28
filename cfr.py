@@ -82,14 +82,15 @@ class InfoSet:
     """
 
     #unique identifier for the information set
-    key: tuple
+    #TODO: Change key to string
+    key: bytes
 
     strategy: Dict[Action, float]
     regret: Dict[Action, float]
     
     cumulative_strategy: Dict[Action, float]
 
-    def __init__(self, key: tuple):
+    def __init__(self, key: bytes):
         """
         Initialize
         """
@@ -122,7 +123,7 @@ class InfoSet:
             'average_strategy': self.cumulative_strategy,
         }
 
-    def load_dict(self, data: Dict[tuple, any]):
+    def load_dict(self, data: Dict[str, any]):
         """
         Load data from a saved dictionary
         """
@@ -172,8 +173,7 @@ class InfoSet:
 
 class CFR:
    
-    #might have to make this a tuple :-(
-    info_sets: Dict[tuple, InfoSet]
+    info_sets: Dict[bytes, InfoSet]
 
     def __init__(self, *,
                  n_players: int = 2,
@@ -196,9 +196,11 @@ class CFR:
         info_set_key = h.info_set_key()
         if info_set_key not in self.info_sets:
             self.info_sets[info_set_key] = h.new_info_set()
+
         return self.info_sets[info_set_key]
 
     def walk_tree(self, h: History, i: Player, pi_1: float, pi_2: float) -> float:
+        # print(f'new iteration of walk trees')
         if h.is_terminal():
            return h.terminal_utility(i)
         

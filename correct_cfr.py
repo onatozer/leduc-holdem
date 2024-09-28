@@ -5,7 +5,7 @@ import argparse
 
 import rlcard
 
-from cfr_agent import CFRAgent
+# from cfr_agent import CFRAgent
 from cfr import CFR
 from define_abstractions import History
 
@@ -25,73 +25,95 @@ from rlcard.utils import (
 import numpy as np
 import random
 
-# class CFRAgent(CFR):
-#     ''' Implement CFR (chance sampling) algorithm
-#     '''
+class CFRAgent(CFR):
+    ''' Implement CFR (chance sampling) algorithm
+    '''
 
-#     def __init__(self, env, model_path='./cfr_model'):
+    def __init__(self, env, model_path='./cfr_model'):
 
-#         super().__init__(create_new_history = History)
-#         self.use_raw = False
-#         self.env = env
-#         self.model_path = model_path
+        super().__init__(create_new_history = History)
+        self.use_raw = False
+        self.env = env
+        self.model_path = model_path
+
+        #debug variables
+        self.random_actions = 0
+        self.agent_actions = 0
+
+    def _show_info_state_probs(self):
+        for i in self.info_sets.keys():
+            print(f'key: {self.info_sets[i].key}\n cumulative strategy: {self.info_sets[i].cumulative_strategy}')
+
+    def eval_step(self, state):
+        ''' Given a state, predict action based on average policy
+
+        Args:
+            state (numpy.array): State representation
+
+        Returns:
+            action (int): Predicted action
+            info (dict): A dictionary containing information
+        '''
+
+        legal_actions = [0,0,0,0]
+
+        for i in range(4):
+            if i in state['legal_actions']:
+                legal_actions[i] = 1
 
 
-#     def eval_step(self, state):
-#         ''' Given a state, predict action based on average policy
+        obs_array = np.array(state['obs'], dtype= np.uint8)
+        action_mask = np.array(state['obs'], dtype = np.uint8)
 
-#         Args:
-#             state (numpy.array): State representation
+        edited_state = np.concatenate((obs_array,action_mask))
+        # print(f'dict index before byte: {edited_state}')
 
-#         Returns:
-#             action (int): Predicted action
-#             info (dict): A dictionary containing information
-#         '''
+        edited_state = edited_state.tobytes()
 
-#         legal_actions = [0,0,0,0]
 
-#         for i in range(4):
-#             if i in state['legal_actions']:
-#                 legal_actions[i] = 1
+        # print(f'num info set keys {len(self.info_sets.keys())}')
 
-#         edited_state = tuple(state['obs']) + tuple(legal_actions)
+        #index into info_set with edited_state, and cumulative_strategy should give us our probability distribution
 
-#         #index into info_set with edited_state, and cumulative_strategy should give us our probability distribution
+        #If the state doesn't have an entry in our info_set dict, then we just take the averages of the possible options
+        if edited_state not in self.info_sets.keys():
+            self._show_info_state_probs
+            # print(edited_state)
 
-#         #If the state doesn't have an entry in our info_set dict, then we just take the averages of the possible options
-#         if edited_state not in self.info_sets.keys():
-#             action_list = []
-#             for i, value in enumerate(legal_actions):
-#                 if value == 1:
-#                     action_list.append(i)
+            action_list = []
+            for i, value in enumerate(legal_actions):
+                if value == 1:
+                    action_list.append(i)
             
-#             action = random.choice(action_list)
-#             #NOTE: this might not be of the correct length
-#             probabilities = [1/len(action_list) for i in action_list]
+            action = random.choice(action_list)
+            #NOTE: this might not be of the correct length
+            self.random_actions +=1 
+            probabilities = [1/len(action_list) for i in action_list]
 
-#         else:
-#             info_set = self.info_sets[edited_state]
-#             average_strategy = info_set.get_average_strategy()
-#             probabilities = list(average_strategy.values())
+        else:
+            info_set = self.info_sets[edited_state]
+            average_strategy = info_set.get_average_strategy()
+            probabilities = list(average_strategy.values())
 
-#             #Do I need to use numpy for this ??
-#             action = np.random.choice(list(average_strategy.keys()), p = probabilities)
+            #Do I need to use numpy for this ??
+            self.agent_actions += 1
+            action = np.random.choice(list(average_strategy.keys()), p = probabilities)
 
-#         return action, probabilities
+        return action, probabilities
 
-#     def get_state(self, player_id):
-#         ''' Get state_str of the player
+    def get_state(self, player_id):
+        ''' Get state_str of the player
 
-#         Args:
-#             player_id (int): The player id
+        Args:
+            player_id (int): The player id
 
-#         Returns:
-#             (tuple) that contains:
-#                 state (str): The state str
-#                 legal_actions (list): Indices of legal actions
-#         '''
-#         state = self.env.get_state(player_id)
-#         return state['obs'].tostring(), list(state['legal_actions'].keys())
+        Returns:
+            (tuple) that contains:
+                state (str): The state str
+                legal_actions (list): Indices of legal actions
+        '''
+        state = self.env.get_state(player_id)
+        return state['obs'].tostring(), list(state['legal_actions'].keys())
 
 
 def train(args):
@@ -134,11 +156,12 @@ def train(args):
     with Logger(args.log_dir) as logger:
         for episode in range(args.num_episodes):
             #run the 'walk trees function for 100 epochs
-            agent.train()
+            agent.train(epochs = 100)
             # agent.save()
-            print('\rIteration {}'.format(episode), end='')
             # Evaluate the performance. Play with Random agents.
             if episode % args.evaluate_every == 0:
+                print('\rIteration {}'.format(episode), end='')
+                print(f'random actions taken {agent.random_actions}. Agent actions taken {agent.agent_actions}')
                 agent.save() # Save model
                 logger.log_performance(
                     episode,
@@ -168,7 +191,7 @@ if __name__ == '__main__':
     parser.add_argument(
         '--num_eval_games',
         type=int,
-        default=2000,
+        default=100,
     )
     parser.add_argument(
         '--evaluate_every',

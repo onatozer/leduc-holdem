@@ -2,11 +2,15 @@ What I'm thinking is that if the performance is boudned in the range .65 - .8, t
 Plan is to use the petting zoo to train, the rl code to evaluate, lets see if it works
 
 
+Info sets dict isn't properly taking in new states for some reason, this could be problem with history class, 
+or could be problem with infosets dict, idk rn
 
-Ok, so reading the code for the history class, I just realized that it is also the enginge running kuhn poker
-, but because its so simple, this somehow works out fine, we need it to wrap the leduc env for this to work
+Also why is a tuple still getting passed in (I think its bc we're loading the model up from the previous code which had a tuple)
 
 
+[1 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 1
+ 1 1 0]
 
-
+[1. 0. 0. 0. 0. 0. 0. 1. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 1.
+ 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 0. 1. 1. 1. 0.]
 
