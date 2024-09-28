@@ -1,92 +1,170 @@
-Iteration 0
+Iteration 0agent actions 0
+ random actions 0
+
 ----------------------------------------
   episode      |  0
-  reward       |  0.12475
+  reward       |  0.36
 ----------------------------------------
-Iteration 1
+Iteration 1agent actions 142
+ random actions 0
+
 ----------------------------------------
   episode      |  1
-  reward       |  0.08025
+  reward       |  0.155
 ----------------------------------------
-Iteration 2
+Iteration 2agent actions 278
+ random actions 0
+
 ----------------------------------------
   episode      |  2
-  reward       |  0.1525
+  reward       |  -0.045
 ----------------------------------------
-Iteration 3
+Iteration 3agent actions 411
+ random actions 0
+
 ----------------------------------------
   episode      |  3
-  reward       |  0.11375
+  reward       |  0.255
 ----------------------------------------
-Iteration 4
+Iteration 4agent actions 551
+ random actions 0
+
 ----------------------------------------
   episode      |  4
-  reward       |  0.19375
+  reward       |  0.225
 ----------------------------------------
-Iteration 5
+Iteration 5agent actions 671
+ random actions 0
+
 ----------------------------------------
   episode      |  5
-  reward       |  0.29275
+  reward       |  0.335
 ----------------------------------------
-Iteration 6
+Iteration 6agent actions 805
+ random actions 0
+
 ----------------------------------------
   episode      |  6
-  reward       |  0.194
+  reward       |  -0.08
 ----------------------------------------
-Iteration 7
+Iteration 7agent actions 932
+ random actions 0
+
 ----------------------------------------
   episode      |  7
-  reward       |  0.15825
+  reward       |  0.475
 ----------------------------------------
-Iteration 8
+Iteration 8agent actions 1067
+ random actions 0
+
 ----------------------------------------
   episode      |  8
-  reward       |  0.25425
+  reward       |  0.255
 ----------------------------------------
-Iteration 9
+Iteration 9agent actions 1201
+ random actions 0
+
 ----------------------------------------
   episode      |  9
-  reward       |  0.2455
+  reward       |  0.3
 ----------------------------------------
-Iteration 10
+Iteration 10agent actions 1325
+ random actions 0
+
 ----------------------------------------
   episode      |  10
-  reward       |  0.2
+  reward       |  0.535
 ----------------------------------------
-Iteration 11
+Iteration 11agent actions 1453
+ random actions 0
+
 ----------------------------------------
   episode      |  11
-  reward       |  0.22275
+  reward       |  0.145
 ----------------------------------------
-Iteration 12
+Iteration 12agent actions 1580
+ random actions 0
+
 ----------------------------------------
   episode      |  12
-  reward       |  0.2625
+  reward       |  0.765
 ----------------------------------------
-Iteration 13
+Iteration 13agent actions 1716
+ random actions 0
+
 ----------------------------------------
   episode      |  13
-  reward       |  0.3235
+  reward       |  0.165
 ----------------------------------------
-Iteration 14
+Iteration 14agent actions 1843
+ random actions 0
+
 ----------------------------------------
   episode      |  14
-  reward       |  0.3155
+  reward       |  0.005
 ----------------------------------------
-Iteration 15
+Iteration 15agent actions 1986
+ random actions 0
+
 ----------------------------------------
   episode      |  15
-  reward       |  0.23525
+  reward       |  0.375
 ----------------------------------------
-Iteration 16
+Iteration 16agent actions 2124
+ random actions 0
+
 ----------------------------------------
   episode      |  16
-  reward       |  0.294
+  reward       |  0.51
 ----------------------------------------
-Iteration 17
+Iteration 17agent actions 2259
+ random actions 0
+
 ----------------------------------------
   episode      |  17
-  reward       |  0.242
+  reward       |  0.555
+----------------------------------------
+Iteration 18agent actions 2395
+ random actions 0
+
+----------------------------------------
+  episode      |  18
+  reward       |  -0.095
+----------------------------------------
+Iteration 19agent actions 2530
+ random actions 0
+
+----------------------------------------
+  episode      |  19
+  reward       |  0.16
+----------------------------------------
+Iteration 20agent actions 2666
+ random actions 0
+
+----------------------------------------
+  episode      |  20
+  reward       |  -0.405
+----------------------------------------
+Iteration 21agent actions 2810
+ random actions 0
+
+----------------------------------------
+  episode      |  21
+  reward       |  0.32
+----------------------------------------
+Iteration 22agent actions 2944
+ random actions 0
+
+----------------------------------------
+  episode      |  22
+  reward       |  0.385
+----------------------------------------
+Iteration 23agent actions 3075
+ random actions 0
+
+----------------------------------------
+  episode      |  23
+  reward       |  0.2
 ----------------------------------------
 
 Logs saved in experiments/leduc_holdem_cfr_result/
