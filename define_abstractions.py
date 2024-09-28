@@ -56,41 +56,40 @@ class History(_History):
     """ 
 
 
-    def __init__(self, seed = None, actions = None):
+    def __init__(self, env, actions = None, seed = None):
         """
         Initialize with a given history string
         """
         super().__init__()
         #Should this be a shallow copy ??
-        self.actions = actions.copy() if actions else []
+        self.env = env
+        self.actions = []
         self.seed = seed if seed is not None else np.random.randint(1_000)
 
         # history = leduc.env(render_mode = 'ansi')
         # history.reset(seed=np.random.randint(1_000))
         # self.history = history
 
-        #We need to have a player counter for this to work, maybe not anymore ??
 
-    #TODO: How do I manage closing of the environments, could be making the code significantly slower
-    def get_env(self):
-        """
-        Creates the environment and puts it in the state that corresponds to the given actions taken
-        """
-        env = leduc.env(render_mode='ansi')
-        env.reset(seed=self.seed)
+    def __add__(self, action: Action):
+        self.env.reset(seed = self.seed)
+        self.actions = self.actions + action
         for action in self.actions:
-            env.step(action)
+            self.env.step(action)
 
-        return env
-    
+        return History(env = self.env, actions = self.actions, seed=self.seed)
+
+
+    # def step(self, action: Action):
+    #     self.env.step(action)
+    #     self.actions.append(action)
 
     def is_terminal(self):
         """
         Whether the history is terminal (game over).
         """
         
-        env = self.get_env()
-        observation, reward, termination, truncation, info = env.last()
+        observation, reward, termination, truncation, info = self.env.last()
         if termination or truncation:
             return True
         else:
@@ -101,24 +100,14 @@ class History(_History):
         Get the terminal utility for player $i$
         """
         # If $i$ is Player 1
-        env = self.get_env()
-        observation, reward, termination, truncation, info = env.last()
+        observation, reward, termination, truncation, info = self.env.last()
         if i == self.player():
             return reward
         else:
             return -1*reward
         
-
-    
-    def __add__(self, other: Action):
-        """
-        Add an action to the history and return a new history
-        Treat this as simply taking step in env with action other
-        """
-        #god bless GPT
-        return History(actions=self.actions + [other], seed=self.seed)
-
-
+    #TODO
+    #NOTE: Might be wrong, but doubt it 
     def player(self) -> Player:
         """
         Current player
@@ -141,8 +130,7 @@ class History(_History):
         """
     
         #Ok, looks simple enough, just return literally all information that isn't the opponent hand + actions you can perform
-        env = self.get_env()
-        observation, reward, termination, truncation, info = env.last()
+        observation, reward, termination, truncation, info = self.env.last()
 
         return tuple(observation['observation']) + tuple(observation['action_mask'])
         

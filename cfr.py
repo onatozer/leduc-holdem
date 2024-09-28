@@ -177,6 +177,7 @@ class CFR:
 
     def __init__(self, *,
                  n_players: int = 2,
+                 env = None,
                  create_new_history: Callable[[], History]):
         """
         * `create_new_history` creates a new empty history
@@ -184,6 +185,7 @@ class CFR:
         * `n_players` is the number of players
         """
         self.n_players = n_players
+        self.env = env
         # A dictionary for $\mathcal{I}$ set of all information sets
         self.create_new_history = create_new_history
         self.info_sets = {}
@@ -212,7 +214,6 @@ class CFR:
             #player 1 -> 0, player 2 -> 1
             if h.player() == 0:
                 v_a[a] = self.walk_tree(h + a, i, pi_1*I.strategy[a], pi_2)
-
             elif h.player() == 1:
                 v_a[a] = self.walk_tree(h + a, i, pi_1, pi_2*I.strategy[a])
 
@@ -250,7 +251,7 @@ class CFR:
         # Loop for `epochs` times
         for t in range(epochs):
             for i in range(self.n_players):
-                self.walk_tree(self.create_new_history(), cast(Player, i), 1, 1)     
+                self.walk_tree(self.create_new_history(env = self.env), cast(Player, i), 1, 1)     
 
         #     # Save checkpoints every $1,000$ iterations
         #     if (t + 1) % 1_000 == 0:

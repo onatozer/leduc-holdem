@@ -5,6 +5,7 @@ import argparse
 
 import rlcard
 
+
 # from cfr_agent import CFRAgent
 from cfr import CFR
 from define_abstractions import History
@@ -31,10 +32,11 @@ class CFRAgent(CFR):
 
     def __init__(self, env, model_path='./cfr_model'):
 
-        super().__init__(create_new_history = History)
+        super().__init__(create_new_history = History, env = env)
         self.use_raw = False
-        self.env = env
         self.model_path = model_path
+
+        
         self.random_actions = 0
         self.agent_actions = 0
 
@@ -174,7 +176,7 @@ if __name__ == '__main__':
     parser.add_argument(
         '--num_eval_games',
         type=int,
-        default=100,
+        default=2_000,
     )
     parser.add_argument(
         '--evaluate_every',
