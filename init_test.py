@@ -9,12 +9,7 @@ env.reset(seed=69)
 
 # print(env.last())
 
-new_env = env
-# print(new_env.last())
-new_env.step(0)
-print(new_env.last())
-print(env.last())
-
+print(env.num_actions)
 #Is this code for two agents playing against eachother, or am I coding my actions which are being sent to the environment??
 #You're playing with yourself :-)
 

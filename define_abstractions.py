@@ -63,8 +63,14 @@ class History(_History):
         super().__init__()
         #Should this be a shallow copy ??
         self.env = env
-        self.actions = []
         self.seed = seed if seed is not None else np.random.randint(1_000)
+        self.actions = actions if actions is not None else []
+
+
+        self.env.reset(seed = self.seed)
+        #walk through the env to get to the end of action list
+        for action in self.actions:
+            self.env.step(action)
 
         # history = leduc.env(render_mode = 'ansi')
         # history.reset(seed=np.random.randint(1_000))
@@ -72,10 +78,8 @@ class History(_History):
 
 
     def __add__(self, action: Action):
-        self.env.reset(seed = self.seed)
-        self.actions = self.actions + action
-        for action in self.actions:
-            self.env.step(action)
+        # self.env.reset(seed = self.seed)
+        self.actions = self.actions + [action]
 
         return History(env = self.env, actions = self.actions, seed=self.seed)
 

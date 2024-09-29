@@ -4,6 +4,8 @@ import os
 import argparse
 
 import rlcard
+from pettingzoo.classic import leduc_holdem_v4
+
 
 
 # from cfr_agent import CFRAgent
@@ -103,13 +105,15 @@ class CFRAgent(CFR):
 
 def train(args):
     # Make environments, CFR only supports Leduc Holdem
-    env = rlcard.make(
-        'leduc-holdem',
-        config={
-            'seed': 0,
-            'allow_step_back': True,
-        }
-    )
+    # env = rlcard.make(
+    #     'leduc-holdem',
+    #     config={
+    #         'seed': 0,
+    #         'allow_step_back': True,
+    #     }
+    # )
+    env = leduc_holdem_v4.env(render_mode="ansi")
+
     eval_env = rlcard.make(
         'leduc-holdem',
         config={
@@ -133,7 +137,7 @@ def train(args):
     # Evaluate CFR against random
     eval_env.set_agents([
         agent,
-        RandomAgent(num_actions=env.num_actions),
+        RandomAgent(num_actions=4),
     ])
 
     # Start training
