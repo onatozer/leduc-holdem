@@ -34,21 +34,37 @@ def train(args):
             'allow_step_back': True,
         }
     )
+    eval_env = rlcard.make(
+        'leduc-holdem',
+        config={
+            'seed': 0,
+        }
+    )
 
     # Seed numpy, torch, random
     set_seed(args.seed)
 
-    agent = CFR(env=env)
+    
+    agent = CFR(env = env)
     agent.load()  # If we have saved model, we first load the model
 
-    # Start training
-    for i in range(args.epochs):
-        agent.train()  # Perform training for one epoch or iteration
-        if i % args.save_every == 0:
-            agent.save()
-            print(f'Model saved at epoch {i}')
+    # Evaluate CFR against random
+    eval_env.set_agents([
+        agent,
+        RandomAgent(num_actions=env.num_actions),
+    ])
 
-
+    with Logger(args.log_dir) as logger:
+        for i in range(args.num_rounds):
+            logger.log_performance(
+                    i,
+                    tournament(
+                        eval_env,
+                        args.num_eval_games
+                    )[0]
+                )
+            csv_path, fig_path = logger.csv_path, logger.fig_path
+     
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser("CFR example in RLCard")
@@ -58,14 +74,19 @@ if __name__ == '__main__':
         default=42,
     )
     parser.add_argument(
-        '--epochs',
+        '--num_episodes',
         type=int,
         default=5000,
     )
     parser.add_argument(
-        '--save_every',
+        '--num_eval_games',
         type=int,
-        default= 100,
+        default=2_000,
+    )
+    parser.add_argument(
+        '--num_rounds',
+        type=int,
+        default= 10,
     )
     parser.add_argument(
         '--log_dir',

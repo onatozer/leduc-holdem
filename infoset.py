@@ -27,28 +27,19 @@ class InfoSet:
         """
         return self.legal_actions
 
+    #TODO: Implement this function
     def calculate_strategy(self):
         """
         Calculate current strategy using regret matching.
         """
-        positive_regrets = {a: max(r, 0) for a, r in self.regret.items()}
-        regret_sum = sum(positive_regrets.values())
-        if regret_sum > 0:
-            self.strategy = {a: positive_regrets[a] / regret_sum for a in self.legal_actions}
-        else:
-            count = len(self.legal_actions)
-            self.strategy = {a: 1.0 / count for a in self.legal_actions}
+        
 
+    #TODO: Implement this function
     def get_average_strategy(self):
         """
         Get average strategy based on cumulative strategy.
         """
-        strategy_sum = sum(self.cumulative_strategy.values())
-        if strategy_sum > 0:
-            return {a: self.cumulative_strategy[a] / strategy_sum for a in self.legal_actions}
-        else:
-            count = len(self.legal_actions)
-            return {a: 1.0 / count for a in self.legal_actions}
+        
 
     def to_dict(self):
         """

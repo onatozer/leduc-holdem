@@ -8,7 +8,6 @@ from rlcard.utils.utils import *
 
 
 
-#Let's try seeing if we can rewrite this without using the history class
 class CFR:
    
     def __init__(self, *,
@@ -40,9 +39,10 @@ class CFR:
         state = self.env.get_state(player_id)
         return self._state_abstraction(state)
 
+    #TODO: Write your own abstraction here:
     def _state_abstraction(self, state):
-        obs = np.array(state['obs'], dtype=np.uint8)
-        return obs.tobytes()
+        ...
+
 
     def _get_info_set(self, info_set_key, legal_actions):
         """
@@ -51,6 +51,7 @@ class CFR:
         if info_set_key not in self.info_sets:
             self.info_sets[info_set_key] = InfoSet(info_set_key, legal_actions)
         return self.info_sets[info_set_key]
+
 
     def walk_tree(self, i: Player, pi_i: float, pi_neg_i: float) -> float:
         if self.env.is_over():
@@ -117,7 +118,7 @@ class CFR:
 
     
     #Ok, I think we did it, can come back later for some better information logging
-    def train(self, epochs):
+    def train(self, epochs = 1):
         """
         ### Iteratively update $\textcolor{lightgreen}{\sigma^t(I)(a)}$
 
