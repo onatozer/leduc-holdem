@@ -53,41 +53,10 @@ class CFR:
         return self.info_sets[info_set_key]
 
 
+
+    #TODO: Reimplement the walk_tree function, but instead of using the history class, use the built-in class env variable
     def walk_tree(self, i: Player, pi_i: float, pi_neg_i: float) -> float:
-        if self.env.is_over():
-            payoffs = self.env.get_payoffs()
-            return payoffs[i]  # Return the payoff for player i
-
-        current_player = self.env.get_player_id()
-        state = self.env.get_state(current_player)
-
-        info_set_key = self.get_info_set_key(current_player)
-        legal_actions = list(state['legal_actions'].keys())
-
-        I = self._get_info_set(info_set_key, legal_actions)
-        I.calculate_strategy()
-
-        v = 0
-        v_a = {}
-
-        for a in I.actions():
-            self.env.step(a)
-
-            if current_player == i:
-                v_a[a] = self.walk_tree(i, pi_i * I.strategy[a], pi_neg_i)
-            else:
-                v_a[a] = self.walk_tree(i, pi_i, pi_neg_i * I.strategy[a])
-
-            self.env.step_back()
-            v += I.strategy[a] * v_a[a]
-
-        if current_player == i:
-            for a in I.actions():
-                regret = pi_neg_i * (v_a[a] - v)
-                I.regret[a] += regret
-                I.cumulative_strategy[a] += pi_i * I.strategy[a]
-
-        return v
+        ...
 
     
     def eval_step(self, state):
