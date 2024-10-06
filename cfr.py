@@ -41,7 +41,7 @@ class CFR:
 
     #TODO: Write your own abstraction here:
     def _state_abstraction(self, state):
-        ...
+        return state
 
 
     def _get_info_set(self, info_set_key, legal_actions):
@@ -53,10 +53,58 @@ class CFR:
         return self.info_sets[info_set_key]
 
 
-
     #TODO: Reimplement the walk_tree function, but instead of using the history class, use the built-in class env variable
     def walk_tree(self, i: Player, pi_i: float, pi_neg_i: float) -> float:
-        ...
+        #player 1 ->index 0, player 2 -> index 1
+        if self.env.is_over():
+            payoff_list = self.env.get_payoffs()
+            return payoff_list[i]
+        
+
+        state = self.env.get_state(i)
+
+        legal_actions = state['actions']
+
+        #this will be the info_set key
+        obs = state['obs']
+
+        I = self._get_info_set(info_set_key=obs,legal_actions=legal_actions)
+
+        v_sigma = 0
+        v_a = {}
+
+        for action in I.actions():
+
+            self.env.step(action)
+            
+            if self.env.get_player_id() == i:
+                v_a[action] = self.walk_tree(i, pi_i * I.strategy[action], pi_neg_i)
+
+            else:
+                v_a[action] = self.walk_tree(i, pi_i, pi_neg_i  * I.strategy[action])
+
+            self.env.step_back()
+            v_sigma += I.strategy[action] * v_a[action]
+
+
+        if self.env.get_player_id() == i:
+
+            for action in I.actions():
+                I.regret[action] += pi_neg_i*(v_a[action] - v_sigma)
+                I.cumulative_strategy[action] += pi_i*I.strategy[action]
+
+            I.calculate_strategy()
+
+        
+                
+
+
+
+
+
+        
+
+
 
     
     def eval_step(self, state):

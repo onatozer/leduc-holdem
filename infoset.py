@@ -32,6 +32,18 @@ class InfoSet:
         """
         Calculate current strategy using regret matching.
         """
+        # Find the sum of all the cumulative regrets at this infoset
+        sum_regrets = 0
+        for regret in self.regret.values():
+            sum_regrets += max(regret, 0)
+
+        if sum_regrets <= 0:
+            for action in self.regret.keys():
+                self.strategy[action] = 1 / len(self.regret)
+
+        else:
+            for action, regret in self.regret.items():
+                self.strategy[action] = max(regret, 0) /sum_regrets
         
 
     #TODO: Implement this function
@@ -39,6 +51,17 @@ class InfoSet:
         """
         Get average strategy based on cumulative strategy.
         """
+        strategy_sum = sum(self.cumulative_strategy.values())
+
+        avg_strategy = {a for a in self.legal_actions}
+
+        for action in avg_strategy:
+            avg_strategy[action] = self.cumulative_strategy[action]/strategy_sum
+
+        return avg_strategy
+
+
+
         
 
     def to_dict(self):
