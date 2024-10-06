@@ -61,10 +61,11 @@ class CFR:
             return payoff_list[i]
         
 
-        state = self.env.get_state(i)
+        current_player = self.env.get_player_id()
+        state = self.env.get_state(current_player)
 
 
-        info_set_key = self.get_info_set_key(i)
+        info_set_key = self.get_info_set_key(current_player)
         legal_actions = list(state['legal_actions'].keys())
         
 
@@ -72,6 +73,7 @@ class CFR:
 
         v_sigma = 0
         v_a = {}
+
 
         for action in I.actions():
 
@@ -93,10 +95,10 @@ class CFR:
                 I.regret[action] += pi_neg_i*(v_a[action] - v_sigma)
                 I.cumulative_strategy[action] += pi_i*I.strategy[action]
 
-            I.calculate_strategy()
-
+            
+        I.calculate_strategy()
         
-                
+        return v_sigma
 
 
 

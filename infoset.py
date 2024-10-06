@@ -53,9 +53,9 @@ class InfoSet:
         """
         strategy_sum = sum(self.cumulative_strategy.values())
 
-        avg_strategy = {a for a in self.legal_actions}
+        avg_strategy = {a: self.cumulative_strategy.get(a,0.) for a in self.actions()}
 
-        for action in avg_strategy:
+        for action in self.legal_actions:
             avg_strategy[action] = self.cumulative_strategy[action]/strategy_sum
 
         return avg_strategy
