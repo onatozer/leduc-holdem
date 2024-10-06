@@ -41,7 +41,7 @@ class CFR:
 
     #TODO: Write your own abstraction here:
     def _state_abstraction(self, state):
-        return state
+        return state['obs'].tostring()
 
 
     def _get_info_set(self, info_set_key, legal_actions):
@@ -63,12 +63,12 @@ class CFR:
 
         state = self.env.get_state(i)
 
-        legal_actions = state['actions']
 
-        #this will be the info_set key
-        obs = state['obs']
+        info_set_key = self.get_info_set_key(i)
+        legal_actions = list(state['legal_actions'].keys())
+        
 
-        I = self._get_info_set(info_set_key=obs,legal_actions=legal_actions)
+        I = self._get_info_set(info_set_key=info_set_key,legal_actions=legal_actions)
 
         v_sigma = 0
         v_a = {}
